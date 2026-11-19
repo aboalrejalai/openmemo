@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ميمو — تفويض</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kufam:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root { --green:#1B8354; --soft:#dff6e7; --ink:#111927; --muted:#4d5761; --line:#e5e7eb; }
+    * { box-sizing:border-box; }
+    body {
+      margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+      padding:1.5rem;
+      font-family:"Kufam","Segoe UI",Tahoma,sans-serif; color:var(--ink);
+      background:
+        radial-gradient(1000px 500px at 0% 0%, rgba(27,131,84,.3), transparent 55%),
+        linear-gradient(160deg,#092a1e,#104631 50%,#0c111b);
+    }
+    .card {
+      width:min(420px,100%); background:#fff; border-radius:20px;
+      padding:2rem 1.75rem; text-align:center;
+      box-shadow:0 24px 60px rgba(0,0,0,.35);
+    }
+    .steps { display:flex; gap:.4rem; justify-content:center; margin:0 0 1.25rem; }
+    .steps span { width:28%; height:4px; border-radius:99px; background:var(--line); }
+    .steps span.on { background:var(--green); }
+    .logo {
+      width:72px; height:72px; margin:0 auto 1rem; border-radius:18px;
+      background:var(--soft); display:grid; place-items:center;
+    }
+    .logo img { width:44px; height:44px; }
+    h1 { margin:0 0 .4rem; font-size:1.45rem; }
+    p { margin:0 0 1.4rem; color:var(--muted); line-height:1.65; font-size:.95rem; }
+    button {
+      width:100%; padding:1rem 1.1rem; border:0; border-radius:12px;
+      background:linear-gradient(180deg,#25935f,var(--green));
+      color:#fff; font-family:inherit; font-size:1.1rem; font-weight:700;
+      cursor:pointer; box-shadow:0 10px 24px rgba(27,131,84,.3);
+    }
+    button:hover { filter:brightness(1.05); }
+    .hint { margin-top:1rem; font-size:.8rem; color:var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="steps" aria-hidden="true"><span class="on"></span><span class="on"></span><span></span></div>
+    <div class="logo"><img src='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none"%3E %3Crect width="64" height="64" rx="14" fill="%230F172A"/%3E %3Cpath d="M16 42V22l10 12 10-12v20" stroke="%2338BDF8" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/%3E %3Ccircle cx="46" cy="24" r="3" fill="%2338BDF8"/%3E %3Cpath d="M46 30v12" stroke="%2338BDF8" stroke-width="3.5" stroke-linecap="round"/%3E %3C/svg%3E' alt="OpenMemo" /></div>
+    <h1>تفويض ميمو</h1>
+    <p>السماح لهذا التطبيق (Gemini / Claude / Cursor) بالوصول لذاكرتك الخاصة. اضغط الزر في الوسط للمتابعة.</p>
+    <form method="post">
+      <button type="submit">Authorize — تفويض</button>
+    </form>
+    <p class="hint">مرة واحدة تكفي تقريباً لسنة كاملة</p>
+  </div>
+</body>
+</html>

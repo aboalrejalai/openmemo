@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "memo": {
+      "command": "${CURSOR_PLUGIN_ROOT}/bin/memo-mcp",
+      "env": {
+        "USER_AGENT": "plugin;cursor;memo;1.1.0"
+      }
+    }
+  }
+}

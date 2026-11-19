@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Memo session memory",
+    "description": "Records every ZadLoop session into the Memo vault under sessions/<project>/<date>/, the same place Claude Code sessions go."
+  }
+}

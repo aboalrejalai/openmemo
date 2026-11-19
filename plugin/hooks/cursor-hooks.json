@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": "${OPENMEMO_HOME:-$HOME/openmemo}/plugin/bin/memo start"
+      },
+      {
+        "command": "${OPENMEMO_HOME:-$HOME/openmemo}/plugin/bin/memo hook cursor context"
+      }
+    ],
+    "beforeSubmitPrompt": [
+      {
+        "command": "${OPENMEMO_HOME:-$HOME/openmemo}/plugin/bin/memo hook cursor session-init"
+      },
+      {
+        "command": "${OPENMEMO_HOME:-$HOME/openmemo}/plugin/bin/memo hook cursor context"
+      }
+    ],
+    "beforeReadFile": [
+      {
+        "command": "${OPENMEMO_HOME:-$HOME/openmemo}/plugin/bin/memo hook cursor file-context"
+      }
+    ],
+    "afterShellExecution": [
+      {
+        "command": "${OPENMEMO_HOME:-$HOME/openmemo}/plugin/bin/memo hook cursor observation"
+      }
+    ],
+    "afterMCPExecution": [
+      {
+        "command": "${OPENMEMO_HOME:-$HOME/openmemo}/plugin/bin/memo hook cursor observation"
+      }
+    ],
+    "afterFileEdit": [
+      {
+        "command": "${OPENMEMO_HOME:-$HOME/openmemo}/plugin/bin/memo hook cursor observation"
+      }
+    ],
+    "postToolUse": [
+      {
+        "command": "${OPENMEMO_HOME:-$HOME/openmemo}/plugin/bin/memo hook cursor observation"
+      }
+    ],
+    "postToolUseFailure": [
+      {
+        "command": "${OPENMEMO_HOME:-$HOME/openmemo}/plugin/bin/memo hook cursor observation"
+      }
+    ],
+    "subagentStop": [
+      {
+        "command": "${OPENMEMO_HOME:-$HOME/openmemo}/plugin/bin/memo hook cursor subagent-stop"
+      }
+    ],
+    "stop": [
+      {
+        "command": "${OPENMEMO_HOME:-$HOME/openmemo}/plugin/bin/memo hook cursor summarize"
+      }
+    ],
+    "sessionEnd": [
+      {
+        "command": "${OPENMEMO_HOME:-$HOME/openmemo}/plugin/bin/memo hook cursor session-end"
+      }
+    ]
+  }
+}

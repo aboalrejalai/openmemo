@@ -1,0 +1,32 @@
+{
+  "name": "memo",
+  "displayName": "Memo",
+  "version": "1.1.0",
+  "description": "Automatic session memory for Cursor, stored as Markdown in the Memo vault — hooks, MCP, and search, the same capture stack as Claude Code.",
+  "author": {
+    "name": "Mohammed Abo Alrejal"
+  },
+  "repository": "https://github.com/aboalrejalai/memo",
+  "homepage": "https://github.com/aboalrejalai/memo",
+  "license": "MIT",
+  "keywords": [
+    "memory",
+    "sessions",
+    "markdown",
+    "obsidian",
+    "mcp",
+    "hooks"
+  ],
+  "logo": "assets/logo.svg",
+  "category": "productivity",
+  "tags": [
+    "memory",
+    "sessions",
+    "mcp"
+  ],
+  "skills": "./skills/",
+  "hooks": "./hooks/cursor-plugin-hooks.json",
+  "mcpServers": "./mcp.json",
+  "rules": "./rules/",
+  "commands": "./commands/"
+}

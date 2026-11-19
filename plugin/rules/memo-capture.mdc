@@ -1,0 +1,11 @@
+---
+description: Memo session memory — capture is automatic; search past work through Memo MCP
+alwaysApply: true
+---
+
+Memo is recording this Cursor session into the vault (same capture stack as Claude Code).
+
+- Past work in this or another project: use the `memo-search` skill, or call `memo_search` → `memo_session_timeline` → `memo_get_observations`.
+- Do not invent prior decisions; if Memo context or search is empty, say so.
+- To record something capture cannot see, use `memo_save_memory` (never passwords, keys, or tokens).
+- Dynamic project recall is also written to `.cursor/rules/memo-context.mdc` at session start.

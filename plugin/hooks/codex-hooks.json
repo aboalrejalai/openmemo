@@ -1,0 +1,84 @@
+{
+  "description": "Memo session memory hooks for Codex",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/bin/sh -c 'R=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-${OPENMEMO_HOME:-$HOME/openmemo}/plugin}}\"; [ -x \"$R/bin/memo\" ] || R=\"${OPENMEMO_HOME:-$HOME/openmemo}/plugin\"; exec \"$R/bin/memo\" start'",
+            "timeout": 20
+          }
+        ],
+        "matcher": "startup|resume|clear|compact"
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/bin/sh -c 'R=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-${OPENMEMO_HOME:-$HOME/openmemo}/plugin}}\"; [ -x \"$R/bin/memo\" ] || R=\"${OPENMEMO_HOME:-$HOME/openmemo}/plugin\"; exec \"$R/bin/memo\" hook codex context'",
+            "timeout": 20
+          }
+        ],
+        "matcher": "startup|resume|clear|compact"
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/bin/sh -c 'R=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-${OPENMEMO_HOME:-$HOME/openmemo}/plugin}}\"; [ -x \"$R/bin/memo\" ] || R=\"${OPENMEMO_HOME:-$HOME/openmemo}/plugin\"; exec \"$R/bin/memo\" hook codex session-init'",
+            "timeout": 20
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/bin/sh -c 'R=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-${OPENMEMO_HOME:-$HOME/openmemo}/plugin}}\"; [ -x \"$R/bin/memo\" ] || R=\"${OPENMEMO_HOME:-$HOME/openmemo}/plugin\"; exec \"$R/bin/memo\" hook codex file-context'",
+            "timeout": 30
+          }
+        ],
+        "matcher": ".*"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/bin/sh -c 'R=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-${OPENMEMO_HOME:-$HOME/openmemo}/plugin}}\"; [ -x \"$R/bin/memo\" ] || R=\"${OPENMEMO_HOME:-$HOME/openmemo}/plugin\"; exec \"$R/bin/memo\" hook codex observation'",
+            "timeout": 5
+          }
+        ],
+        "matcher": ".*"
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/bin/sh -c 'R=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-${OPENMEMO_HOME:-$HOME/openmemo}/plugin}}\"; [ -x \"$R/bin/memo\" ] || R=\"${OPENMEMO_HOME:-$HOME/openmemo}/plugin\"; exec \"$R/bin/memo\" hook codex summarize'",
+            "timeout": 60
+          }
+        ]
+      }
+    ],
+    "PostCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/bin/sh -c 'R=\"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-${OPENMEMO_HOME:-$HOME/openmemo}/plugin}}\"; [ -x \"$R/bin/memo\" ] || R=\"${OPENMEMO_HOME:-$HOME/openmemo}/plugin\"; exec \"$R/bin/memo\" hook codex context'",
+            "timeout": 20
+          }
+        ]
+      }
+    ]
+  }
+}

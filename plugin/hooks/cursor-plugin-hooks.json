@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": "\"${CURSOR_PLUGIN_ROOT}/bin/memo\" start",
+        "timeout": 60
+      },
+      {
+        "command": "\"${CURSOR_PLUGIN_ROOT}/bin/memo\" hook cursor context",
+        "timeout": 60
+      }
+    ],
+    "beforeSubmitPrompt": [
+      {
+        "command": "\"${CURSOR_PLUGIN_ROOT}/bin/memo\" hook cursor session-init",
+        "timeout": 15
+      },
+      {
+        "command": "\"${CURSOR_PLUGIN_ROOT}/bin/memo\" hook cursor context",
+        "timeout": 60
+      }
+    ],
+    "beforeReadFile": [
+      {
+        "command": "\"${CURSOR_PLUGIN_ROOT}/bin/memo\" hook cursor file-context",
+        "timeout": 15
+      }
+    ],
+    "afterShellExecution": [
+      {
+        "command": "\"${CURSOR_PLUGIN_ROOT}/bin/memo\" hook cursor observation",
+        "timeout": 120
+      }
+    ],
+    "afterMCPExecution": [
+      {
+        "command": "\"${CURSOR_PLUGIN_ROOT}/bin/memo\" hook cursor observation",
+        "timeout": 120
+      }
+    ],
+    "afterFileEdit": [
+      {
+        "command": "\"${CURSOR_PLUGIN_ROOT}/bin/memo\" hook cursor observation",
+        "timeout": 120
+      }
+    ],
+    "postToolUse": [
+      {
+        "command": "\"${CURSOR_PLUGIN_ROOT}/bin/memo\" hook cursor observation",
+        "timeout": 120
+      }
+    ],
+    "postToolUseFailure": [
+      {
+        "command": "\"${CURSOR_PLUGIN_ROOT}/bin/memo\" hook cursor observation",
+        "timeout": 120
+      }
+    ],
+    "subagentStop": [
+      {
+        "command": "\"${CURSOR_PLUGIN_ROOT}/bin/memo\" hook cursor subagent-stop",
+        "timeout": 30
+      }
+    ],
+    "stop": [
+      {
+        "command": "\"${CURSOR_PLUGIN_ROOT}/bin/memo\" hook cursor summarize",
+        "timeout": 30
+      }
+    ],
+    "sessionEnd": [
+      {
+        "command": "\"${CURSOR_PLUGIN_ROOT}/bin/memo\" hook cursor session-end",
+        "timeout": 30
+      }
+    ]
+  }
+}

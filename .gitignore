@@ -1,0 +1,11 @@
+.cache/
+.memo/
+.env
+*.pyc
+__pycache__/
+.DS_Store
+.obsidian/
+deploy/memo-mcp/.env
+deploy_key*
+node_modules/
+.agy-briefs/

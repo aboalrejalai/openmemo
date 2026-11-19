@@ -1,0 +1,154 @@
+{
+  "description": "Memo session memory hooks",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/bin/memo",
+            "args": [
+              "start"
+            ],
+            "timeout": 60,
+            "async": true
+          }
+        ]
+      },
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/bin/memo",
+            "args": [
+              "hook",
+              "claude-code",
+              "context"
+            ],
+            "timeout": 60
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/bin/memo",
+            "args": [
+              "hook",
+              "claude-code",
+              "session-init"
+            ],
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Read|Edit|MultiEdit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/bin/memo",
+            "args": [
+              "hook",
+              "claude-code",
+              "file-context"
+            ],
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/bin/memo",
+            "args": [
+              "hook",
+              "claude-code",
+              "observation"
+            ],
+            "timeout": 120,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/bin/memo",
+            "args": [
+              "hook",
+              "claude-code",
+              "observation"
+            ],
+            "timeout": 120,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/bin/memo",
+            "args": [
+              "hook",
+              "claude-code",
+              "summarize"
+            ],
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/bin/memo",
+            "args": [
+              "hook",
+              "claude-code",
+              "subagent-stop"
+            ],
+            "timeout": 30,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/bin/memo",
+            "args": [
+              "hook",
+              "claude-code",
+              "session-end"
+            ],
+            "async": true
+          }
+        ]
+      }
+    ]
+  }
+}

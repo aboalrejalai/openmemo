@@ -1,0 +1,16 @@
+{
+  "name": "@local/memo-sessions",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Records every ZadLoop session into the Memo vault, the same way the Claude Code plugin does.",
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": ["index.js", "cordis.patch.yml", "locale/*.json", "icon.svg"],
+  "dsh": {
+    "bundle": { "patch": "./cordis.patch.yml" }
+  }
+}

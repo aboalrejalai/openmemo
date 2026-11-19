@@ -1,0 +1,23 @@
+#!/bin/sh
+# Memo launcher. The plugin is a thin shell: all code lives in the vault, so
+# editing the vault's scripts/ takes effect without reinstalling the plugin.
+# Vault: $MEMO_VAULT, else "vault" in ~/.memo/settings.json, else ${OPENMEMO_HOME:-$HOME/openmemo}.
+
+for py in /opt/homebrew/bin/python3 /usr/local/bin/python3 python3; do
+  if command -v "$py" >/dev/null 2>&1; then PY="$py"; break; fi
+done
+[ -n "$PY" ] || { [ "$1" = "hook" ] && echo '{}'; exit 0; }
+
+VAULT="${MEMO_VAULT:-}"
+if [ -z "$VAULT" ] && [ -f "$HOME/.memo/settings.json" ]; then
+  VAULT=$("$PY" -c 'import json,sys; print(json.load(open(sys.argv[1])).get("vault",""))' "$HOME/.memo/settings.json" 2>/dev/null)
+fi
+[ -n "$VAULT" ] || VAULT="${OPENMEMO_HOME:-$HOME/openmemo}"
+
+CLI="$VAULT/scripts/memo_capture/cli.py"
+if [ ! -f "$CLI" ]; then
+  # A hook must never break the session, even when the vault is missing.
+  [ "$1" = "hook" ] && echo '{}'
+  exit 0
+fi
+MEMO_VAULT="$VAULT" exec "$PY" "$CLI" "$@"

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ميمو — دخول</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Kufam:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --green: #1B8354;
+      --green-dark: #166a45;
+      --green-soft: #dff6e7;
+      --ink: #111927;
+      --muted: #4d5761;
+      --line: #e5e7eb;
+      --bg0: #092a1e;
+      --bg1: #104631;
+      --card: #ffffff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh;
+      font-family: "Kufam", "Segoe UI", Tahoma, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 600px at 10% -10%, rgba(27,131,84,.35), transparent 55%),
+        radial-gradient(900px 500px at 100% 0%, rgba(20,87,58,.45), transparent 50%),
+        linear-gradient(160deg, var(--bg0), var(--bg1) 55%, #0c111b);
+      display: flex; align-items: center; justify-content: center;
+      padding: 1.5rem;
+    }
+    .card {
+      width: min(420px, 100%);
+      background: var(--card);
+      border-radius: 20px;
+      padding: 2rem 1.75rem 1.75rem;
+      box-shadow: 0 24px 60px rgba(0,0,0,.35);
+      text-align: center;
+    }
+    .logo {
+      width: 72px; height: 72px; margin: 0 auto 1rem;
+      display: grid; place-items: center;
+      border-radius: 18px;
+      background: var(--green-soft);
+    }
+    .logo img { width: 44px; height: 44px; }
+    h1 {
+      margin: 0 0 .35rem;
+      font-size: 1.55rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .sub {
+      margin: 0 0 1.5rem;
+      color: var(--muted);
+      font-size: .95rem;
+      line-height: 1.6;
+    }
+    .form-group { text-align: right; margin-bottom: 1rem; }
+    label {
+      display: block; margin-bottom: .45rem;
+      font-size: .9rem; font-weight: 600; color: var(--muted);
+    }
+    input[type=password] {
+      width: 100%;
+      padding: .9rem 1rem;
+      border: 2px solid var(--line);
+      border-radius: 12px;
+      font-size: 1rem;
+      font-family: inherit;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    input[type=password]:focus {
+      outline: none;
+      border-color: var(--green);
+      box-shadow: 0 0 0 4px rgba(27,131,84,.15);
+    }
+    button {
+      width: 100%;
+      margin-top: .35rem;
+      padding: .95rem 1rem;
+      border: 0;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #25935f, var(--green));
+      color: #fff;
+      font-family: inherit;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .15s, box-shadow .15s, filter .15s;
+    }
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(27,131,84,.35);
+      filter: brightness(1.03);
+    }
+    .error {
+      margin-top: .85rem;
+      color: #b42318;
+      font-size: .9rem;
+      font-weight: 600;
+    }
+    .foot {
+      margin-top: 1.25rem;
+      font-size: .8rem;
+      color: var(--muted);
+    }
+    .steps {
+      display: flex; gap: .4rem; justify-content: center;
+      margin: 0 0 1.25rem;
+    }
+    .steps span {
+      width: 28%; height: 4px; border-radius: 99px;
+      background: var(--line);
+    }
+    .steps span.on { background: var(--green); }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="steps" aria-hidden="true">
+      <span class="on"></span><span></span><span></span>
+    </div>
+    <div class="logo"><img src='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none"%3E %3Crect width="64" height="64" rx="14" fill="%230F172A"/%3E %3Cpath d="M16 42V22l10 12 10-12v20" stroke="%2338BDF8" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/%3E %3Ccircle cx="46" cy="24" r="3" fill="%2338BDF8"/%3E %3Cpath d="M46 30v12" stroke="%2338BDF8" stroke-width="3.5" stroke-linecap="round"/%3E %3C/svg%3E' alt="OpenMemo" /></div>
+    <h1>ميمو</h1>
+    <p class="sub">ذاكرتك الخاصة — OpenMemo<br/>أدخل كلمة السر مرة واحدة — ثم اضغط تفويض</p>
+    {{if .HasPassword}}
+    <form action="/.auth/login" method="POST">
+      <div class="form-group">
+        <label for="password">كلمة السر</label>
+        <input type="password" id="password" name="password" required autocomplete="current-password" autofocus />
+      </div>
+      <button type="submit">دخول</button>
+      {{if .PasswordError}}
+      <div class="error">{{.PasswordError}}</div>
+      {{end}}
+    </form>
+    {{end}}
+    <p class="foot">OpenMemo · memo.example.com</p>
+  </div>
+</body>
+</html>

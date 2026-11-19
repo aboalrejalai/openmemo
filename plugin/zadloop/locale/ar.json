@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "ذاكرة جلسات ميمو",
+    "description": "يحفظ كل جلسة في ZadLoop داخل Memo تحت sessions/<المشروع>/<التاريخ>/، في نفس مكان جلسات Claude Code."
+  }
+}

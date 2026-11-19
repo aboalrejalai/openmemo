@@ -1,0 +1,28 @@
+{
+  "name": "memo",
+  "version": "1.1.0",
+  "description": "Records every Codex session into the Memo vault as Markdown and brings it back in the next session",
+  "author": {
+    "name": "Mohammed Abo Alrejal"
+  },
+  "repository": "https://github.com/aboalrejalai/memo",
+  "keywords": [
+    "memory",
+    "sessions",
+    "markdown",
+    "obsidian",
+    "mcp"
+  ],
+  "skills": "./skills/",
+  "hooks": "./hooks/codex-hooks.json",
+  "interface": {
+    "displayName": "Memo",
+    "shortDescription": "Automatic session memory, stored as Markdown in the Memo vault.",
+    "developerName": "Mohammed Abo Alrejal",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ]
+  }
+}

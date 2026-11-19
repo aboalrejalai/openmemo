@@ -1,0 +1,67 @@
+# Memo remote MCP on the VPS (host systemd cloudflared → 127.0.0.1:8765).
+# Do NOT add a cloudflared service here (owner-locked host tunnel branch).
+name: memo-mcp
+
+services:
+  memo-mcp:
+    build: .
+    image: memo-mcp
+    platform: linux/amd64
+    hostname: memo-vps
+    ports:
+      - "127.0.0.1:8765:8080"
+    volumes:
+      - memo-vault:/srv/memo
+      - memo-proxy-data:/srv/proxy-data
+      - ./deploy_key:/run/secrets/deploy_key:ro
+    networks:
+      - memo-net
+    environment:
+      MEMO_REMOTE: "1"
+      MEMO_VAULT: /srv/memo
+      MEMO_SYNC_INTERVAL_MINUTES: "1"
+      MEMO_CREATE_FILL_DELAY: "0"
+      HOME: /tmp
+      TZ: Asia/Riyadh
+    env_file:
+      - path: .env
+        required: false
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 512m
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+    # Until plan 003 sync.py exists, require only that the proxy answers on :8080.
+    # TODO(plan 004 TASK-001): switch to .cache/sync.json last_attempt freshness.
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python3",
+          "-c",
+          "import socket,sys; s=socket.socket(); s.settimeout(2); r=s.connect_ex(('127.0.0.1',8080)); s.close(); sys.exit(0 if r==0 else 1)",
+        ]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+      start_period: 120s
+
+networks:
+  memo-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.80.0/24
+
+volumes:
+  memo-vault:
+  memo-proxy-data:

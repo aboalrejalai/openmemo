@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "openmemo"
+version = "2.1.0"
+description = "Sovereign Memory Vault & Zero-Cost Hybrid Search Engine for AI Coding Agents (MCP + Capture Hooks + Interactive Knowledge Graph Studio)"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.11"
+authors = [
+  { name = "Mohammed Aboalrejal" }
+]
+keywords = ["mcp", "memory", "knowledge-graph", "sqlite", "fts5", "claude", "cursor", "gemini", "antigravity", "codex"]
+dependencies = []
+
+[project.scripts]
+memo = "memo_capture.cli:main"
+openmemo = "memo_capture.cli:main"
+openmemo-mcp = "mcp_server:main"
+
+[tool.setuptools]
+package-dir = {"" = "scripts"}
+py-modules = ["memo_core", "mcp_server", "mcp_remote", "memory_engine", "memo_merge", "memo_ui", "vault_lint"]
+
+[tool.setuptools.packages.find]
+where = ["scripts"]
+include = ["memo_capture*"]

@@ -1,0 +1,16 @@
+{
+  "name": "memo",
+  "version": "1.1.0",
+  "description": "Automatic session memory for Claude Code, stored as Markdown in the Memo vault",
+  "author": {
+    "name": "Mohammed Abo Alrejal"
+  },
+  "repository": "https://github.com/aboalrejalai/memo",
+  "keywords": [
+    "memory",
+    "sessions",
+    "markdown",
+    "obsidian",
+    "mcp"
+  ]
+}

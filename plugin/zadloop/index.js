@@ -19,7 +19,7 @@ import { spawn } from 'node:child_process'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 
-const LAUNCHER = process.env.MEMO_LAUNCHER || join(homedir(), 'Desktop', 'Project', 'memo', 'plugin', 'bin', 'memo')
+const LAUNCHER = process.env.MEMO_LAUNCHER || join(process.env.OPENMEMO_HOME || join(homedir(), 'openmemo'), 'plugin', 'bin', 'memo')
 const TIMEOUT_MS = 30000
 const MAX_TEXT = 32000
 

@@ -26,9 +26,19 @@ def observer_home() -> Path:
     return legacy_home() if vault_dir().resolve() in home.parents else home
 
 
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+
+
 def vault_dir() -> Path:
+    """MEMO_VAULT, else the checkout this code runs from, else $OPENMEMO_HOME or ~/openmemo
+    (the same order as memo_core and the plugin launcher)."""
     raw = os.environ.get("MEMO_VAULT")
-    return Path(raw).expanduser().resolve() if raw else Path.home() / "Desktop" / "Project" / "memo"
+    if raw:
+        return Path(raw).expanduser().resolve()
+    if (_REPO_ROOT / "timeline.md").exists() and (_REPO_ROOT / "scripts" / "memo_core.py").exists():
+        return _REPO_ROOT
+    home = os.environ.get("OPENMEMO_HOME")
+    return Path(home).expanduser().resolve() if home else Path.home() / "openmemo"
 
 
 def logs_dir() -> Path:

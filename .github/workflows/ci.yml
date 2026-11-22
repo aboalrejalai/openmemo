@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Python ${{ matrix.python }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python: ["3.9", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Git identity for vault commits made by tests
+        run: |
+          git config --global user.email "ci@openmemo.local"
+          git config --global user.name "openmemo-ci"
+      - name: Vault lint
+        run: python scripts/vault_lint.py
+      - name: MCP server suite
+        run: python scripts/test_mcp.py
+      - name: Capture unit tests
+        run: python -m unittest discover -s tests/capture -p "test_*.py"
+
+  installer:
+    name: Installer
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check shell syntax
+        run: sh -n install.sh && sh -n plugin/bin/memo
+      - name: Install into a clean HOME from this checkout
+        run: |
+          export HOME="$RUNNER_TEMP/home"; mkdir -p "$HOME"
+          git config --global user.email "ci@openmemo.local"
+          git config --global user.name "openmemo-ci"
+          OPENMEMO_REPO="$GITHUB_WORKSPACE" sh install.sh
+          "$HOME/.local/bin/memo" --version

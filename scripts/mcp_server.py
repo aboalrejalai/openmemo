@@ -35,7 +35,7 @@ SERVER_INSTRUCTIONS = (
     "what happened around one item, 3) memo_get_observations([ids]) for full details. "
     "Fetch details only for what the task needs."
 )
-SERVER_VERSION = "2.0.0"
+SERVER_VERSION = "0.1.0"
 SUPPORTED_PROTOCOLS = ["2025-06-18", "2025-03-26", "2024-11-05"]
 LATEST_PROTOCOL = SUPPORTED_PROTOCOLS[0]
 

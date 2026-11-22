@@ -5,4 +5,4 @@ A Python standard-library reimplementation of the claude-mem design
 in the Memo vault instead of a private database.
 """
 
-__version__ = "1.0.0"
+__version__ = "0.1.0"

@@ -22,15 +22,23 @@ Open-source sovereign memory vault & zero-cost hybrid search engine for AI codin
 
 ## Install (one command)
 
+**macOS / Linux**
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/aboalrejalai/openmemo/main/install.sh | sh
 ```
 
+**Windows (PowerShell)**
+
+```powershell
+irm https://raw.githubusercontent.com/aboalrejalai/openmemo/main/install.ps1 | iex
+```
+
 That's it. The installer:
 
-1. checks for `git` and Python 3.9+ (macOS already has both),
+1. checks for `git` and Python 3.9+ (macOS already has both; on Windows: `winget install Git.Git Python.Python.3.12`),
 2. downloads OpenMemo into `~/openmemo`,
-3. adds the `memo` command to `~/.local/bin`,
+3. adds the `memo` command to your PATH (`~/.local/bin`, or `openmemo\\plugin\\bin` on Windows),
 4. runs `memo init`, which finds Claude Code, Cursor, Codex, Gemini CLI, Antigravity, Windsurf and OpenCode and wires them up.
 
 Then open the Studio:

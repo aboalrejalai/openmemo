@@ -6,7 +6,15 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- Windows support: `irm .../install.ps1 | iex`, a `memo.cmd` launcher, and portable file locks (`scripts/oslock.py`).
+- CI on Windows, a macOS installer job, and a Docker job that builds the server image, starts it and checks the MCP handshake.
+
 ### Fixed
+- The worker and `memo ui` could hang on start on machines with slow DNS: Python's HTTP server did a reverse DNS lookup when binding.
+- Two identical prompts sent in the same millisecond were stored as one.
+- Without `MEMO_VAULT`, the capture code fell back to a personal path instead of the checkout or `~/openmemo`.
+- The server image defaulted to the Asia/Riyadh time zone; it is UTC now (set `TZ` to change it).
 - `memo init` now links the skills into `~/.claude/skills/` too, so Claude Code sees them.
 - The `memo` and `memo-vault` skills can be invoked by the agent on its own again.
 

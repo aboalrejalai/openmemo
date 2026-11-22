@@ -28,7 +28,7 @@ FROM ${PYTHON_IMAGE}
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     HOME=/tmp \
-    TZ=Asia/Riyadh
+    TZ=UTC
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends git openssh-client tzdata ca-certificates curl \

@@ -129,7 +129,7 @@ def safe_vault_path(rel: str, *, must_exist: bool = False) -> Path:
 
 
 def rel_to_vault(p: Path) -> str:
-    return str(p.resolve().relative_to(VAULT_DIR))
+    return p.resolve().relative_to(VAULT_DIR).as_posix()
 
 
 def _name_key(name: str) -> str:

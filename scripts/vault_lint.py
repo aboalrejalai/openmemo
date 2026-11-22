@@ -202,7 +202,7 @@ def lint() -> Dict[str, Any]:
     fm_entity_ids = set()
 
     for path in files:
-        rel = str(path.relative_to(VAULT))
+        rel = path.relative_to(VAULT).as_posix()
         text = path.read_text(encoding="utf-8", errors="replace")
         fm_raw, body = split_frontmatter(text)
         if fm_raw is None:
@@ -297,7 +297,7 @@ def lint() -> Dict[str, Any]:
                            ("projects", {"Project", "Organization"}),
                            ("stack", {"Technology"})):
         for path in sorted((VAULT / folder).glob("*.md")):
-            rel = str(path.relative_to(VAULT))
+            rel = path.relative_to(VAULT).as_posix()
             if rel not in by_file:
                 warnings.append({"file": rel, "code": "no_graph_entity", "msg": f"No entity references this file"})
 

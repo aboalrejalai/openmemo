@@ -472,7 +472,7 @@ def build_frontmatter(rel: str, body: str, by_file: Dict[str, Dict], existing: D
 
 
 def process_file(path: Path, by_file: Dict[str, Dict], dry_run: bool = False) -> str:
-    rel = str(path.relative_to(VAULT))
+    rel = path.relative_to(VAULT).as_posix()
     text = path.read_text(encoding="utf-8")
     old_fm_raw, body = split_frontmatter(text)
     existing = parse_simple_yaml(old_fm_raw) if old_fm_raw is not None else {}

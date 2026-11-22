@@ -15,8 +15,6 @@ visibility: private
 live_url:
 stack: []
 hackathon:
-second-brain-id: a70253e5-419d-43e7-9427-abd479c02895
-second-brain-synced: September 10, 2026 - 7:50 AM GMT+3
 ---
 # {{title}}
 

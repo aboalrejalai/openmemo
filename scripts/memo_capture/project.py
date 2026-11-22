@@ -68,11 +68,12 @@ def _marker_root(cwd: str) -> Optional[str]:
 
 
 def _environment(cwd: str, mapping: Dict[str, str]) -> Optional[str]:
-    resolved = str(Path(cwd).resolve())
+    resolved = Path(cwd).resolve()
     best = None
     for prefix, name in (mapping or {}).items():
-        p = str(Path(os.path.expanduser(prefix)).resolve())
-        if (resolved == p or resolved.startswith(p.rstrip("/") + "/")) and (best is None or len(p) > len(best[0])):
+        p = Path(os.path.expanduser(prefix)).resolve()
+        # Path comparison, not string prefixes: works with Windows separators and drive letters.
+        if (resolved == p or p in resolved.parents) and (best is None or len(str(p)) > len(str(best[0]))):
             best = (p, str(name))
     return best[1] if best else None
 

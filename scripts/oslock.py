@@ -75,7 +75,14 @@ def local_http_server(address, handler):
     from http.server import ThreadingHTTPServer
 
     class _Server(ThreadingHTTPServer):
+        # On Windows SO_REUSEADDR lets a second process bind the same port, so a
+        # second worker would start; ask for an exclusive bind there instead.
+        allow_reuse_address = os.name != "nt"
+
         def server_bind(self):
+            if os.name == "nt":
+                import socket
+                self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
             socketserver.TCPServer.server_bind(self)
             host, port = self.server_address[:2]
             self.server_name, self.server_port = str(host), port

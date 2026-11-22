@@ -23,6 +23,7 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 import threading
 import time
 from dataclasses import dataclass
@@ -125,7 +126,10 @@ class Observer:
         for key in ("ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN", "CLAUDE_CODE_ENTRYPOINT",
                     "CLAUDECODE", "CLAUDE_PROJECT_DIR"):
             env.pop(key, None)
-        self.proc = subprocess.Popen(build_command(self.resume), cwd=str(observer_cwd()), env=env,
+        cmd = build_command(self.resume)
+        if os.name == "nt" and cmd[0].lower().endswith(".py"):
+            cmd = [sys.executable] + cmd     # Windows cannot run a .py file as a program
+        self.proc = subprocess.Popen(cmd, cwd=str(observer_cwd()), env=env,
                                      stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                      text=True, encoding="utf-8", bufsize=1)
         threading.Thread(target=self._drain_stderr, daemon=True).start()

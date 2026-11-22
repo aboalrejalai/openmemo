@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Memo command line, reached through the plugin launcher `bin/memo`.
 
+  memo --version             print the OpenMemo version
   memo hook <host> <event>   run one hook (stdin: host payload, stdout: JSON)
   memo init [--yes]          auto-detect & wire installed AI agents, skills, and MCP
   memo ui [--port 8766]      launch Memo Sovereign Studio (Knowledge Graph & Hybrid Search UI)
@@ -32,6 +33,10 @@ def main(argv=None) -> int:
     argv = list(sys.argv[1:] if argv is None else argv)
     if not argv or argv[0] in ("-h", "--help", "help"):
         print(__doc__.strip())
+        return 0
+    if argv[0] in ("-V", "--version", "version"):
+        from memo_capture import __version__
+        print(f"openmemo {__version__}")
         return 0
     command, rest = argv[0], argv[1:]
     if command == "hook":

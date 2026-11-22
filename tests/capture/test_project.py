@@ -1,3 +1,4 @@
+import json
 import os
 import subprocess
 import tempfile
@@ -37,7 +38,7 @@ class ResolveTest(unittest.TestCase):
     def test_environment_mapping_wins(self):
         folder = self.base / "client-work" / "deep"
         folder.mkdir(parents=True)
-        with mock.patch.dict(os.environ, {"MEMO_PROJECT_ENVIRONMENTS": f'{{"{self.base}/client-work": "acme"}}'}):
+        with mock.patch.dict(os.environ, {"MEMO_PROJECT_ENVIRONMENTS": json.dumps({str(self.base / "client-work"): "acme"})}):
             settings.load(refresh=True)
             self.assertEqual(project.resolve(str(folder)).name, "acme")
         settings.load(refresh=True)

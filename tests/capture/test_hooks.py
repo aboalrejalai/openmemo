@@ -1,5 +1,6 @@
 import json
 import os
+import shutil
 import subprocess
 import unittest
 from pathlib import Path
@@ -10,6 +11,8 @@ from memo_capture import hooks, handlers
 from memo_capture.adapters import HookResult, claude_code
 
 LAUNCHER = ROOT / "plugin" / "bin" / "memo"
+# Claude Code runs hooks through Git Bash on Windows, so the sh launcher runs under sh there.
+LAUNCH = ([shutil.which("sh")] if os.name == "nt" and shutil.which("sh") else []) + [str(LAUNCHER)]
 
 
 class DispatcherTest(unittest.TestCase):
@@ -59,14 +62,14 @@ class AdapterTest(unittest.TestCase):
 class LauncherTest(unittest.TestCase):
     def test_launcher_always_exits_zero_with_json(self):
         env = dict(os.environ, MEMO_VAULT=str(ROOT))
-        res = subprocess.run([str(LAUNCHER), "hook", "claude-code", "observation"],
+        res = subprocess.run([*LAUNCH, "hook", "claude-code", "observation"],
                              input="{}", capture_output=True, text=True, env=env, timeout=30)
         self.assertEqual(res.returncode, 0)
         self.assertEqual(json.loads(res.stdout), {})
 
     def test_launcher_with_missing_vault_still_answers(self):
         env = dict(os.environ, MEMO_VAULT="/nonexistent/memo")
-        res = subprocess.run([str(LAUNCHER), "hook", "claude-code", "context"],
+        res = subprocess.run([*LAUNCH, "hook", "claude-code", "context"],
                              input="{}", capture_output=True, text=True, env=env, timeout=30)
         self.assertEqual((res.returncode, res.stdout.strip()), (0, "{}"))
 

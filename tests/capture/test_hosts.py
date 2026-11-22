@@ -102,7 +102,7 @@ class OpenCodeAdapterTest(unittest.TestCase):
 class InstallerTest(unittest.TestCase):
     def setUp(self):
         self.home = Path(tempfile.mkdtemp(prefix="memo-home-"))
-        patches = [mock.patch.dict(os.environ, {"HOME": str(self.home)}),
+        patches = [mock.patch.dict(os.environ, {"HOME": str(self.home), "USERPROFILE": str(self.home)}),
                    mock.patch("memo_capture.paths.vault_dir", return_value=ROOT)]
         for p in patches:
             p.start()

@@ -15,12 +15,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         python: ["3.9", "3.12", "3.13"]
         exclude:
           # ubuntu-latest (26.04) has no Python 3.9 build; 3.9 matters for macOS's system Python.
           - os: ubuntu-latest
             python: "3.9"
+          - os: windows-latest
+            python: "3.9"
+    env:
+      PYTHONUTF8: "1"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -37,9 +41,13 @@ jobs:
       - name: Capture unit tests
         run: python -m unittest discover -s tests/capture -p "test_*.py"
 
-  installer:
-    name: Installer
-    runs-on: ubuntu-latest
+  installer-unix:
+    name: Installer (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v4
       - name: Check shell syntax
@@ -51,3 +59,53 @@ jobs:
           git config --global user.name "openmemo-ci"
           OPENMEMO_REPO="$GITHUB_WORKSPACE" sh install.sh
           "$HOME/.local/bin/memo" --version
+          OPENMEMO_REPO="$GITHUB_WORKSPACE" sh install.sh   # second run updates in place
+
+  installer-windows:
+    name: Installer (windows-latest)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install from this checkout with install.ps1
+        shell: pwsh
+        run: |
+          git config --global user.email "ci@openmemo.local"
+          git config --global user.name "openmemo-ci"
+          $env:OPENMEMO_REPO = $env:GITHUB_WORKSPACE
+          $env:OPENMEMO_HOME = Join-Path $env:RUNNER_TEMP 'openmemo'
+          ./install.ps1
+          & (Join-Path $env:OPENMEMO_HOME 'plugin\bin\memo.cmd') --version
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+
+  docker:
+    name: Server (docker compose)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the image
+        run: docker compose build
+      - name: Start with an auto-generated password and wait until healthy
+        run: |
+          docker compose up -d
+          for i in $(seq 1 60); do
+            state=$(docker inspect -f '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' openmemo-openmemo-mcp-1)
+            code=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/ || true)
+            echo "try $i: container=$state http=$code"
+            if [ "$code" != "000" ] && [ "$code" != "" ]; then break; fi
+            sleep 3
+          done
+          docker compose logs
+          [ "$code" != "000" ] || { echo "proxy never answered on :8080"; exit 1; }
+          docker compose logs 2>&1 | grep -q "Auto-Generated Initial Password" || { echo "no initial password banner"; exit 1; }
+      - name: MCP server answers inside the container
+        run: |
+          printf '%s\n' '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"ci","version":"1"}}}' \
+            | docker compose exec -T -e MEMO_REMOTE=1 openmemo-mcp sh -c 'cd /srv/memo && timeout 20 python3 scripts/mcp_server.py' \
+            | tee /tmp/init.json
+          grep -q '"serverInfo"' /tmp/init.json
+      - name: Stop
+        if: always()
+        run: docker compose down -v

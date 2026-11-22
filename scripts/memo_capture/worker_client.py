@@ -45,9 +45,15 @@ def spawn() -> None:
     log = open(logs_dir() / "worker.out", "ab")
     env = dict(os.environ)
     env.pop("MEMO_OBSERVER", None)
+    extra = {}
+    if os.name == "nt":
+        # Outlive the hook's console without opening a window of its own.
+        extra["creationflags"] = (subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP
+                                  | subprocess.CREATE_NO_WINDOW)
+    else:
+        extra["start_new_session"] = True
     subprocess.Popen([sys.executable, str(CLI), "worker"], stdin=subprocess.DEVNULL, stdout=log,
-                     stderr=log, start_new_session=True, close_fds=True, env=env,
-                     cwd=str(memo_home()))
+                     stderr=log, close_fds=True, env=env, cwd=str(memo_home()), **extra)
 
 
 def ensure_started(wait: float = 0.0) -> bool:

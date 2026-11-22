@@ -138,7 +138,8 @@ def cmd_install_cursor(args: List[str]) -> int:
             # Refuse to delete a real directory that is not our symlink.
             print(f"Refusing to replace non-symlink {target}; move it aside and re-run.")
             return 1
-    target.symlink_to(plugin_src, target_is_directory=True)
+    import oslock
+    oslock.link_dir(target, plugin_src)
     print(f"Linked Cursor plugin: {target} → {plugin_src}")
 
     # Migrate: strip Memo hooks from the user hooks file so only the plugin runs them.
@@ -460,7 +461,8 @@ def cmd_init(args: List[str]) -> int:
                 target = dst_root / sdir.name
                 if not target.exists() and not target.is_symlink():
                     try:
-                        target.symlink_to(sdir, target_is_directory=True)
+                        import oslock
+                        oslock.link_dir(target, sdir)
                         linked.append(sdir.name)
                     except OSError:
                         pass

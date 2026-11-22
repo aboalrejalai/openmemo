@@ -319,12 +319,12 @@ def transaction(conn) -> Iterator:
 def _rebuild_new_index(conn: sqlite3.Connection) -> None:
     """A new machine or a deleted index: refill it from the vault's session notes,
     under a file lock so two hooks starting at once rebuild it only once."""
-    import fcntl
+    import oslock
     from . import reindex
     from .paths import log_line, vault_dir
     try:
         with open(memo_home() / "reindex.lock", "w") as lock:
-            fcntl.flock(lock, fcntl.LOCK_EX)
+            oslock.lock(lock)
             if conn.execute("SELECT 1 FROM sessions LIMIT 1").fetchone() is None:
                 counts = reindex.rebuild(conn, vault_dir())
                 collisions = counts.get("collisions") or []

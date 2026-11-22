@@ -16,7 +16,6 @@ import re
 import sys
 import json
 import time
-import fcntl
 import shutil
 import sqlite3
 import datetime
@@ -26,6 +25,8 @@ import importlib.util
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO / "scripts"))
+import oslock  # noqa: E402
 SERVER = REPO / "scripts" / "mcp_server.py"
 ENGINE = REPO / "scripts" / "memory_engine.py"
 TODAY = datetime.date.today().isoformat()
@@ -1030,7 +1031,7 @@ def run() -> int:
         check("CLI refuses a non-YYYY-MM-DD date",
               bad_cli.returncode == 1 and "Expected YYYY-MM-DD" in bad_cli.stderr, bad_cli.stderr)
         lock_fh = open(vault / ".cache" / "memo.lock", "w")
-        fcntl.flock(lock_fh.fileno(), fcntl.LOCK_EX)
+        oslock.lock(lock_fh)
         try:
             waiter = subprocess.Popen(
                 [sys.executable, str(ENGINE), "add-event", "--date", "2026-09-14",
@@ -1040,7 +1041,7 @@ def run() -> int:
             time.sleep(1.0)
             waited = waiter.poll() is None and "Axolotl" not in tl_path.read_text()
         finally:
-            fcntl.flock(lock_fh.fileno(), fcntl.LOCK_UN)
+            oslock.unlock(lock_fh)
             lock_fh.close()
         out, err = waiter.communicate(timeout=60)
         check("CLI add-event waits for the vault lock", waited)

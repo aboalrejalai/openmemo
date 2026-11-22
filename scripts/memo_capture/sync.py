@@ -136,18 +136,11 @@ def _merge_worktree_busy() -> bool:
     """Non-blocking flock on the merge worktree lock file."""
     path = _vault() / MERGE_LOCK
     path.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        import fcntl
-    except ImportError:
-        return False
-    fh = open(path, "w")
-    try:
-        fcntl.flock(fh.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-        fcntl.flock(fh.fileno(), fcntl.LOCK_UN)
-        fh.close()
-        return False
-    except OSError:
-        fh.close()
+    import oslock
+    with open(path, "w") as fh:
+        if oslock.try_lock(fh):
+            oslock.unlock(fh)
+            return False
         return True
 
 
@@ -158,14 +151,9 @@ class _MergeLock:
     def __enter__(self):
         path = _vault() / MERGE_LOCK
         path.parent.mkdir(parents=True, exist_ok=True)
-        try:
-            import fcntl
-        except ImportError:
-            return self
+        import oslock
         self.fh = open(path, "w")
-        try:
-            fcntl.flock(self.fh.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except OSError:
+        if not oslock.try_lock(self.fh):
             self.fh.close()
             self.fh = None
             raise RuntimeError("busy")
@@ -173,11 +161,8 @@ class _MergeLock:
 
     def __exit__(self, *exc):
         if self.fh is not None:
-            try:
-                import fcntl
-                fcntl.flock(self.fh.fileno(), fcntl.LOCK_UN)
-            except Exception:
-                pass
+            import oslock
+            oslock.unlock(self.fh)
             self.fh.close()
 
 

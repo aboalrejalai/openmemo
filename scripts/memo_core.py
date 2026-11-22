@@ -239,28 +239,19 @@ def iter_markdown_files() -> List[Path]:
 def vault_lock(timeout: float = 10.0):
     """Advisory lock so two concurrent agents cannot interleave writes."""
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    try:
-        import fcntl
-    except ImportError:  # non-POSIX: degrade to no-op
-        yield
-        return
-
     import time
+    import oslock
     fh = open(LOCK_PATH, "w")
     deadline = time.time() + timeout
     try:
-        while True:
-            try:
-                fcntl.flock(fh.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-                break
-            except OSError as exc:
-                if exc.errno not in (errno.EACCES, errno.EAGAIN) or time.time() > deadline:
-                    raise MemoError("Another Memo process is holding the vault lock.")
-                time.sleep(0.05)
+        while not oslock.try_lock(fh):
+            if time.time() > deadline:
+                raise MemoError("Another Memo process is holding the vault lock.")
+            time.sleep(0.05)
         yield
     finally:
         try:
-            fcntl.flock(fh.fileno(), fcntl.LOCK_UN)
+            oslock.unlock(fh)
         finally:
             fh.close()
 

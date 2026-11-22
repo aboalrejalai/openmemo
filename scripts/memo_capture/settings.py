@@ -243,7 +243,8 @@ def csv(key: str) -> list:
 
 def worker_port() -> int:
     port = int(get("worker_port") or 0)
-    return port or 37800 + (os.getuid() % 100)
+    uid = os.getuid() if hasattr(os, "getuid") else 0     # Windows has no uid
+    return port or 37800 + (uid % 100)
 
 
 def ensure_file() -> None:

@@ -36,7 +36,7 @@ openmemo-mcp = "mcp_server:main"
 
 [tool.setuptools]
 package-dir = {"" = "scripts"}
-py-modules = ["memo_core", "mcp_server", "mcp_remote", "memory_engine", "memo_merge", "memo_ui", "vault_lint"]
+py-modules = ["oslock", "memo_core", "mcp_server", "mcp_remote", "memory_engine", "memo_merge", "memo_ui", "vault_lint"]
 
 [tool.setuptools.packages.find]
 where = ["scripts"]

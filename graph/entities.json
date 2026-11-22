@@ -1,6 +1,15 @@
 {
   "$schema": "./schema.md",
   "version": "2.2.0",
-  "entities": [],
+  "entities": [
+    {
+      "id": "demo-project",
+      "type": "Project",
+      "name": "Demo Project",
+      "name_ar": "مشروع تجريبي",
+      "aliases": ["demo"],
+      "file": "projects/demo-project.md"
+    }
+  ],
   "relationships": []
 }

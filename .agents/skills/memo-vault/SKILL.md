@@ -1,7 +1,6 @@
 ---
 name: memo-vault
 description: Author and update curated Markdown dossiers and knowledge graph entities in the Memo vault using MCP write tools (memo_create_note, memo_append_section, memo_append_fact, memo_update_fact, memo_add_entity). Follows the six core root hubs policy, folder taxonomy, and schema constraints in docs/VAULT_SPEC.md. Use when authoring client or project dossiers, modifying stack notes, adding knowledge graph entities, or validating vault integrity.
-disable-model-invocation: true
 ---
 
 # Memo Vault: Curated Dossier & Graph Management

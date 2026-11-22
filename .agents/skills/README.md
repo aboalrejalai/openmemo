@@ -19,6 +19,8 @@ Each skill conforms to the Cursor Agent Skill specification with YAML frontmatte
 
 ## Installation & Symlinking
 
+`memo init` (run by the one-command installer) links every skill below into `~/.agents/skills/` and, when Claude Code is installed, `~/.claude/skills/`. The manual commands are only needed for custom layouts.
+
 ### 1. Global User Skills (`~/.agents/skills/`)
 
 To make these skills available across all projects on your machine:

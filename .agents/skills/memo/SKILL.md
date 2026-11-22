@@ -1,7 +1,6 @@
 ---
 name: memo
 description: Recall context and record decisions using the Memo MCP server. Implements the three-step session memory flow (search -> session_timeline -> get_observations) and records facts or decisions via memo_save_memory and memo_append_fact. Use when searching project memory, resuming previous tasks, asking what changed or where we stopped, or saving milestone decisions.
-disable-model-invocation: true
 ---
 
 # Memo: Day-to-Day Session Memory & Recall

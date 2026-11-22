@@ -444,24 +444,28 @@ def cmd_init(args: List[str]) -> int:
         except Exception as exc:
             print(f"  Warning wiring {label}: {exc}", file=sys.stderr)
 
-    # Symlink canonical skills from <vault>/.agents/skills/* into ~/.agents/skills/*
+    # Symlink canonical skills from <vault>/.agents/skills/* into ~/.agents/skills/
+    # (Codex, Cursor, Gemini, Antigravity) and ~/.claude/skills/ (Claude Code).
     src_skills = vault / ".agents" / "skills"
     if src_skills.is_dir():
-        dst_root = home / ".agents" / "skills"
-        dst_root.mkdir(parents=True, exist_ok=True)
-        linked = []
-        for sdir in sorted(src_skills.iterdir()):
-            if not sdir.is_dir() or not (sdir / "SKILL.md").exists():
-                continue
-            target = dst_root / sdir.name
-            if not target.exists() and not target.is_symlink():
-                try:
-                    target.symlink_to(sdir, target_is_directory=True)
-                    linked.append(sdir.name)
-                except OSError:
-                    pass
-        if linked:
-            print(f"Linked agent skills into ~/.agents/skills/: {', '.join(linked)}")
+        roots = [home / ".agents" / "skills"]
+        if (home / ".claude").is_dir():
+            roots.append(home / ".claude" / "skills")
+        for dst_root in roots:
+            dst_root.mkdir(parents=True, exist_ok=True)
+            linked = []
+            for sdir in sorted(src_skills.iterdir()):
+                if not sdir.is_dir() or not (sdir / "SKILL.md").exists():
+                    continue
+                target = dst_root / sdir.name
+                if not target.exists() and not target.is_symlink():
+                    try:
+                        target.symlink_to(sdir, target_is_directory=True)
+                        linked.append(sdir.name)
+                    except OSError:
+                        pass
+            if linked:
+                print(f"Linked agent skills into {dst_root}: {', '.join(linked)}")
 
     # Ensure git merge drivers and SQLite state index are ready
     try:

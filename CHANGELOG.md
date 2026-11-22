@@ -6,6 +6,10 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- `memo init` now links the skills into `~/.claude/skills/` too, so Claude Code sees them.
+- The `memo` and `memo-vault` skills can be invoked by the agent on its own again.
+
 ## [0.1.0] - 2026-11-22
 
 First public release.

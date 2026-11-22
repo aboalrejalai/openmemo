@@ -16,9 +16,19 @@ Follow this sequence when onboarding a user:
 1. Run `memo init` (Automated) → 2. Launch `memo ui` (Visual Studio) → 3. Or Configure Remote VPS
 ```
 
-### Fast Path: One-Command Automated Setup (`memo init`)
+### Fastest Path: One-Command Install
 
-For local installations, run the built-in onboarding wizard first. It automatically detects installed agent CLIs/IDEs (`Claude Code`, `Cursor`, `Google Antigravity`, `Gemini CLI`, `OpenAI Codex CLI`, `Windsurf`, `OpenCode`), wires their capture hooks and MCP entries, symlinks `.agents/skills/*`, and runs `memo doctor`:
+If OpenMemo is not on the machine yet, this single command downloads it into `~/openmemo`, adds `memo` to `~/.local/bin`, and runs `memo init --yes`:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/aboalrejalai/openmemo/main/install.sh | sh
+```
+
+Running it again updates the install. Set `OPENMEMO_HOME` first to install elsewhere.
+
+### Fast Path: Automated Setup on an Existing Clone (`memo init`)
+
+For local installations, run the built-in onboarding wizard first. It automatically detects installed agent CLIs/IDEs (`Claude Code`, `Cursor`, `Google Antigravity`, `Gemini CLI`, `OpenAI Codex CLI`, `Windsurf`, `OpenCode`), wires their capture hooks and MCP entries, symlinks `.agents/skills/*` into `~/.agents/skills/` and `~/.claude/skills/`, and runs `memo doctor`:
 
 ```bash
 ${OPENMEMO_HOME:-$HOME/openmemo}/plugin/bin/memo init --yes

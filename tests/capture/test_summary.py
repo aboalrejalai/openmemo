@@ -34,6 +34,10 @@ class WrapupTest(unittest.TestCase):
     def setUp(self):
         self.conn = state.connect()
 
+    def marker(self, sid):
+        """The wikilink that ties a timeline line to its session note."""
+        return f"[[{state.get_session(self.conn, sid)['markdown_path'][:-3]}]]"
+
     def run_session(self, sid, requests):
         state.upsert_session(self.conn, sid, project="demo-repo", cwd="/x/demo-repo", project_key_source="git")
         for i, (asked, done) in enumerate(requests, 1):
@@ -50,7 +54,7 @@ class WrapupTest(unittest.TestCase):
     def test_two_requests_one_timeline_event_and_one_block(self):
         self.run_session("wrap-session-01", [("Rename OldName", "Phase 1 renamed"), ("Build hooks", "Hooks installed")])
         timeline = (TEST_VAULT / "timeline.md").read_text()
-        self.assertEqual(len([l for l in timeline.splitlines() if "/wrap-session-01]]" in l]), 1)
+        self.assertEqual(len([l for l in timeline.splitlines() if self.marker("wrap-session-01") in l]), 1)
         self.assertIn("**Session:** demo-repo: Rename OldName — Hooks installed (2 request(s)", timeline)
         note = (TEST_VAULT / "projects" / "demo-repo.md").read_text()
         self.assertTrue(note.startswith("---\ntitle: Demo Repo"))
@@ -82,7 +86,7 @@ class WrapupTest(unittest.TestCase):
             self.assertIn(f"- **Last request:** {asked}", note)
             self.assertIn(f"- **Next steps:** open step {i}", note)
             timeline = (TEST_VAULT / "timeline.md").read_text()
-            mine = [l for l in timeline.splitlines() if f"/{sid}]]" in l]
+            mine = [l for l in timeline.splitlines() if self.marker(sid) in l]
             self.assertEqual(len(mine), 1, "one line per session per day, rewritten in place")
             self.assertIn(f"({i} request(s), claude-code, session {sid[:8]})", mine[0])
         self.assertEqual(state.get_session(self.conn, sid)["status"], "active")
@@ -109,7 +113,7 @@ class WrapupTest(unittest.TestCase):
         self.assertIn("newest work", note_path.read_text())
         day = time.strftime("%Y-%m-%d", time.localtime(old_at / 1000))
         lines = (TEST_VAULT / "timeline.md").read_text().splitlines()
-        at = next(i for i, l in enumerate(lines) if f"/{sid}]]" in l)
+        at = next(i for i, l in enumerate(lines) if self.marker(sid) in l)
         header = next(l for l in reversed(lines[:at]) if l.startswith("- **"))
         self.assertEqual(header, f"- **{day}**")
 

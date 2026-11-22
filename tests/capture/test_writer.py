@@ -27,7 +27,8 @@ class WriterTest(unittest.TestCase):
         s, n = self.make("writer-session-0001")
         path = writer.write_session(self.conn, "writer-session-0001")
         rel = path.relative_to(TEST_VAULT).as_posix()
-        self.assertRegex(rel, r"^sessions/demo-repo/\d{4}-\d{2}-\d{2}/writer-session-0001\.md$")
+        # Named after the first prompt, so the Obsidian graph shows a topic, not an id.
+        self.assertRegex(rel, r"^sessions/demo-repo/\d{4}-\d{2}-\d{2}/Add-the-hooks(-\d+)?\.md$")
         self.assertEqual(writer.file_stem("b1436e7e-480d-4c8b-86b2-653e40a5e14e"), "b1436e7e")
         text = path.read_text()
         self.assertIn("type: session", text)

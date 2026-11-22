@@ -71,6 +71,8 @@ class SettingsTest(unittest.TestCase):
         import json
         from pathlib import Path
         tracked = Path(__file__).resolve().parents[2] / ".memo" / "settings.json"
+        if not tracked.exists():
+            self.skipTest("no .memo/settings.json in this checkout (fresh clone)")
         data = json.loads(tracked.read_text(encoding="utf-8"))
         for k in ("machine_name", "name", "id_base", "machine_host", "host",
                   "owns_unstamped", "accept_incoming_code"):

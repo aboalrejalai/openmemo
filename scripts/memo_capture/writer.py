@@ -1,10 +1,10 @@
 """Write session memory into the vault as Markdown.
 
-One file per session: sessions/<project>/<YYYY-MM-DD>/<session8>.md
+One file per session: sessions/<project>/<YYYY-MM-DD>/<topic-slug>.md
 
 The file is regenerated from state.db after every observer reply, so it is
 always complete and ordered. Its exact data sits next to it in
-<session8>.json, which `memo reindex` reads to rebuild state.db; keeping it
+<topic-slug>.json, which `memo reindex` reads to rebuild state.db; keeping it
 out of the note keeps the note (and its Second Brain copy) readable. Writes
 take the vault lock; one git commit per finished turn (when its summary
 lands) and one at session end.
@@ -114,8 +114,6 @@ def _unique_session_rel(session, topic: str) -> str:
     try:
         existing = (vault / path).read_text(encoding="utf-8")[:800]
         if f'session_id: "{sid}"' in existing or f"session_id: '{sid}'" in existing:
-            return base
-        if f'session_id: "{sid[:8]}' in existing:
             return base
     except OSError:
         pass

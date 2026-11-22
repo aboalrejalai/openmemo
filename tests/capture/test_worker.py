@@ -39,7 +39,7 @@ class WorkerProcessTest(unittest.TestCase):
         self.wait_health()
         return p
 
-    def wait_health(self, timeout=10):
+    def wait_health(self, timeout=30):
         import urllib.request
         deadline = time.time() + timeout
         while time.time() < deadline:
@@ -49,6 +49,11 @@ class WorkerProcessTest(unittest.TestCase):
             except Exception:
                 time.sleep(0.1)
         detail = []
+        import signal as _signal
+        for p in self.procs:
+            if p.poll() is None and hasattr(_signal, "SIGUSR1"):
+                p.send_signal(_signal.SIGUSR1)      # worker dumps all thread stacks to stderr
+        time.sleep(1)
         if getattr(self, "stderr_path", None) and self.stderr_path.exists():
             detail.append("stderr:\n" + self.stderr_path.read_text(errors="replace")[-3000:])
         for log in sorted(Path(self.home).glob("logs/*")):

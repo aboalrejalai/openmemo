@@ -291,5 +291,9 @@ class Worker:
 
 
 def main() -> int:
+    import faulthandler
+    if hasattr(signal, "SIGUSR1"):
+        # `kill -USR1 <pid>` prints every thread's stack to stderr: how a stuck worker is diagnosed.
+        faulthandler.register(signal.SIGUSR1, all_threads=True)
     settings.ensure_file()
     return Worker().run()

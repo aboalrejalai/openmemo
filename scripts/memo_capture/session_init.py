@@ -29,7 +29,16 @@ def prompt_payload(inp: NormalizedInput, proj: Project, at_ms: Optional[int]) ->
     return payload
 
 
+_last_at_ms = 0
+
+
 def spool_prompt(inp: NormalizedInput, proj: Project, at_ms: Optional[int] = None) -> None:
+    global _last_at_ms
+    if at_ms is not None:
+        # Two identical prompts in the same millisecond would share a spool key and
+        # the second file would replace the first; keep each one its own event.
+        at_ms = max(at_ms, _last_at_ms + 1)
+        _last_at_ms = at_ms
     spool.write_event("prompt", prompt_payload(inp, proj, at_ms))
 
 

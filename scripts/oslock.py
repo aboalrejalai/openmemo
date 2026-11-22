@@ -1,4 +1,5 @@
-"""Cross-platform advisory file locks: fcntl.flock on POSIX, msvcrt.locking on Windows.
+"""Portability helpers: file locks (fcntl.flock on POSIX, msvcrt.locking on Windows),
+directory links, and a local HTTP server that never waits on DNS.
 
 Each function takes an open file object. The lock covers the whole file on POSIX
 and its first byte on Windows, which is enough for lock files that only exist
@@ -61,3 +62,22 @@ def link_dir(target, source) -> None:
         _winapi.CreateJunction(str(source), str(target))
     else:
         os.symlink(str(source), str(target), target_is_directory=True)
+
+
+def local_http_server(address, handler):
+    """A ThreadingHTTPServer that binds without a reverse DNS lookup.
+
+    http.server calls socket.getfqdn() in server_bind, which can hang for a
+    long time on machines with slow or broken DNS (seen on macOS CI runners
+    and behind VPNs), so a local server would not answer at all.
+    """
+    import socketserver
+    from http.server import ThreadingHTTPServer
+
+    class _Server(ThreadingHTTPServer):
+        def server_bind(self):
+            socketserver.TCPServer.server_bind(self)
+            host, port = self.server_address[:2]
+            self.server_name, self.server_port = str(host), port
+
+    return _Server(address, handler)

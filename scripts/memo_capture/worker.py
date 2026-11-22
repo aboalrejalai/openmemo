@@ -243,7 +243,8 @@ class Worker:
                 else:
                     self._send(404, {"error": "not found"})
 
-        self.server = ThreadingHTTPServer((settings.get("worker_host"), settings.worker_port()), Handler)
+        import oslock
+        self.server = oslock.local_http_server((settings.get("worker_host"), settings.worker_port()), Handler)
         self.server.daemon_threads = True
         self.server.serve_forever(poll_interval=0.5)
 

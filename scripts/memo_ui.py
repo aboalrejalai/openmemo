@@ -1943,7 +1943,8 @@ class MemoUIHandler(BaseHTTPRequestHandler):
 
 
 def run_server(port: int = 8766, open_browser: bool = True) -> int:
-    server = ThreadingHTTPServer(("127.0.0.1", port), MemoUIHandler)
+    import oslock
+    server = oslock.local_http_server(("127.0.0.1", port), MemoUIHandler)
     url = f"http://127.0.0.1:{port}"
     print(f"Memo Sovereign Studio running at {url} (vault: {vault_dir()})")
     if open_browser:

@@ -34,7 +34,7 @@ SKIP_DIRS = {
 ROOT_INSTRUCTION_FILES = {"claude.md", "gemini.md", "agents.md"}
 
 # Product / OSS packaging files at the vault root (GitHub-facing), not dossiers.
-ROOT_PRODUCT_FILES = {"readme.md", "contributing.md", "license.md", "changelog.md"}
+ROOT_PRODUCT_FILES = {"readme.md", "contributing.md", "license.md", "changelog.md", "security.md"}
 
 REQUIRED = {"title", "type", "status", "tags"}
 ALLOWED_TYPES = {

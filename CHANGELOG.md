@@ -6,18 +6,6 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### Added
-- Windows support: `irm .../install.ps1 | iex`, a `memo.cmd` launcher, and portable file locks (`scripts/oslock.py`).
-- CI on Windows, a macOS installer job, and a Docker job that builds the server image, starts it and checks the MCP handshake.
-
-### Fixed
-- The worker and `memo ui` could hang on start on machines with slow DNS: Python's HTTP server did a reverse DNS lookup when binding.
-- Two identical prompts sent in the same millisecond were stored as one.
-- Without `MEMO_VAULT`, the capture code fell back to a personal path instead of the checkout or `~/openmemo`.
-- The server image defaulted to the Asia/Riyadh time zone; it is UTC now (set `TZ` to change it).
-- `memo init` now links the skills into `~/.claude/skills/` too, so Claude Code sees them.
-- The `memo` and `memo-vault` skills can be invoked by the agent on its own again.
-
 ## [0.1.0] - 2026-11-22
 
 First public release.
@@ -30,13 +18,20 @@ First public release.
 - `memo init`: detects and wires Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, Windsurf and OpenCode.
 - MCP server over stdio, plus a password-protected remote MCP container (`docker compose up -d`).
 - Demo vault with templates, a demo project note and a graph entity.
-- GitHub Actions CI on Linux and macOS, Python 3.9, 3.12 and 3.13.
+- GitHub Actions CI on Linux, macOS and Windows (Python 3.9, 3.12 and 3.13), plus installer and Docker server jobs.
 - `SECURITY.md` and this changelog.
+- Windows support: `irm .../install.ps1 | iex`, a `memo.cmd` launcher, and portable file locks (`scripts/oslock.py`).
 
 ### Fixed
 - Two sessions whose ids shared their first 8 characters could overwrite each other's note when they had the same topic on the same day.
 - Note templates carried a fixed Second Brain sync id, so every new note shared it.
 - The Claude, Codex and Cursor plugin manifests pointed at a private repository.
+- The worker and `memo ui` could hang on start on machines with slow DNS: Python's HTTP server did a reverse DNS lookup when binding.
+- Two identical prompts sent in the same millisecond were stored as one.
+- Without `MEMO_VAULT`, the capture code fell back to a personal path instead of the checkout or `~/openmemo`.
+- The server image defaulted to the Asia/Riyadh time zone; it is UTC now (set `TZ` to change it).
+- `memo init` now links the skills into `~/.claude/skills/` too, so Claude Code sees them.
+- The `memo` and `memo-vault` skills can be invoked by the agent on its own again.
 
 ### Changed
 - All components now carry version 0.1.0 (they were 2.1.0, 2.0.0 and 1.0.0).

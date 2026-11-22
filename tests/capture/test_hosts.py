@@ -122,7 +122,7 @@ class InstallerTest(unittest.TestCase):
         self.assertIn("hook gemini observation", data["hooks"]["AfterTool"][1]["hooks"][0]["command"])
         self.assertEqual(sorted(data["hooks"]), ["AfterAgent", "AfterTool", "BeforeAgent", "SessionEnd",
                                                  "SessionStart"])
-        self.assertTrue(data["mcpServers"]["memo"]["args"][0].endswith("scripts/mcp_server.py"))
+        self.assertTrue(data["mcpServers"]["memo"]["args"][0].replace("\\", "/").endswith("scripts/mcp_server.py"))
 
     def test_antigravity_named_entry_and_mcp(self):
         hooks_path = self.home / ".gemini" / "config" / "hooks.json"

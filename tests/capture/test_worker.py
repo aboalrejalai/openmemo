@@ -32,8 +32,9 @@ class WorkerProcessTest(unittest.TestCase):
                 p.wait(5)
 
     def start(self):
+        self.stderr_path = Path(self.home) / "worker-stderr.log"
         p = subprocess.Popen([sys.executable, str(CLI), "worker"], env=self.env,
-                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                             stdout=subprocess.DEVNULL, stderr=open(self.stderr_path, "wb"))
         self.procs.append(p)
         self.wait_health()
         return p
@@ -47,7 +48,13 @@ class WorkerProcessTest(unittest.TestCase):
                     return json.loads(r.read())
             except Exception:
                 time.sleep(0.1)
-        self.fail("worker did not answer /health")
+        detail = []
+        if getattr(self, "stderr_path", None) and self.stderr_path.exists():
+            detail.append("stderr:\n" + self.stderr_path.read_text(errors="replace")[-3000:])
+        for log in sorted(Path(self.home).glob("logs/*")):
+            detail.append(f"{log.name}:\n" + log.read_text(errors="replace")[-2000:])
+        exited = [p.returncode for p in self.procs if p.poll() is not None]
+        self.fail(f"worker did not answer /health (exited: {exited})\n" + "\n".join(detail))
 
     def hook(self, event, payload):
         res = subprocess.run([sys.executable, str(CLI), "hook", "claude-code", event], input=json.dumps(payload),

@@ -188,6 +188,7 @@ def _mcp_args() -> List[str]:
 
 
 def _is_memo(command: str) -> bool:
+    command = command.replace("\\", "/")     # Windows paths use backslashes
     return "memo_capture" in command or "/plugin/bin/memo" in command
 
 

@@ -40,13 +40,23 @@ def event_key(kind: str, payload: Dict[str, Any]) -> str:
     return hashlib.sha256(f"{kind}\0{session}\0{canonical}".encode()).hexdigest()[:40]
 
 
+_last_ns = 0
+
+
 def write_event(kind: str, payload: Dict[str, Any], at_ns: Optional[int] = None) -> Path:
     """Atomically write one event. Returns the file path. `at_ns` places a
     recovered event at its original time in the drain order."""
     if kind not in KINDS:
         raise ValueError(f"unknown spool kind '{kind}'")
     key = event_key(kind, payload)
-    now_ns = at_ns or time.time_ns()
+    global _last_ns
+    if at_ns:
+        now_ns = at_ns
+    else:
+        # Windows' clock ticks every ~15 ms, so two events in a row could share a
+        # timestamp and drain out of order; keep this process's events strictly ordered.
+        now_ns = max(time.time_ns(), _last_ns + 1)
+        _last_ns = now_ns
     body = {"kind": kind, "key": f"{kind}-{key}", "enqueued_at_ms": now_ns // 1_000_000,
             "enqueued_at_ns": now_ns, "payload": payload}
     directory = spool_dir()

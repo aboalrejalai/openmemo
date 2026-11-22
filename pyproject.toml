@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Sovereign Memory Vault & Zero-Cost Hybrid Search Engine for AI Coding Agents (MCP + Capture Hooks + Interactive Knowledge Graph Studio)"
 readme = "README.md"
 license = { text = "MIT" }
-requires-python = ">=3.11"
+requires-python = ">=3.9"
 authors = [
   { name = "Mohammed Abo Alrejal" }
 ]
@@ -16,6 +16,7 @@ classifiers = [
   "Development Status :: 3 - Alpha",
   "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
   "Operating System :: MacOS",
   "Operating System :: POSIX :: Linux",
 ]

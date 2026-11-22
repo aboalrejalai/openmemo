@@ -1,4 +1,9 @@
-# OpenMemo v2.1
+# OpenMemo
+
+[![CI](https://github.com/aboalrejalai/openmemo/actions/workflows/ci.yml/badge.svg)](https://github.com/aboalrejalai/openmemo/actions/workflows/ci.yml)
+[![Version](https://img.shields.io/badge/version-0.1.0-blue)](CHANGELOG.md)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-3776AB)](pyproject.toml)
 
 Open-source sovereign memory vault & zero-cost hybrid search engine for AI coding agents: curated Markdown dossiers, Reciprocal Rank Fusion (FTS5 BM25 + Arabic/Substring Trigram + Knowledge Graph Aliases), built-in interactive Web Studio (`memo ui`), MCP server, and multi-agent capture hooks.
 
@@ -15,41 +20,60 @@ Open-source sovereign memory vault & zero-cost hybrid search engine for AI codin
 
 ---
 
-## What's New in v2.1
+## Install (one command)
 
-- **Zero-Cost Unified Hybrid Search (`hybrid-rrf`)**: Fuses 4 local signals in sub-20ms with $0 API cost — Vault Dossier FTS5, Session Observation BM25, Arabic/Substring Trigram index, and Knowledge Graph bilingual alias expansion.
-- **Built-in Interactive Web Studio (`memo ui`)**: Single-file local web server (`http://127.0.0.1:8766`) with a 60fps HTML5 Canvas force-directed/radial Knowledge Graph, live memory stream, one-click duplicate observation cleaner, and slide-over Markdown dossier reader.
-- **One-Command Onboarding (`memo init`)**: Auto-detects and wires installed AI agents (`Claude Code`, `Cursor`, `Google Antigravity`, `Gemini CLI`, `OpenAI Codex CLI`, `Windsurf`, `OpenCode`), symlinks skills, and runs `memo doctor`.
-- **1-Click Hostinger Docker Compose**: Root `docker-compose.yml` with auto-generated 24-character initial password fallback in `entrypoint.sh` for instant VPS deployment.
+```bash
+curl -fsSL https://raw.githubusercontent.com/aboalrejalai/openmemo/main/install.sh | sh
+```
+
+That's it. The installer:
+
+1. checks for `git` and Python 3.9+ (macOS already has both),
+2. downloads OpenMemo into `~/openmemo`,
+3. adds the `memo` command to `~/.local/bin`,
+4. runs `memo init`, which finds Claude Code, Cursor, Codex, Gemini CLI, Antigravity, Windsurf and OpenCode and wires them up.
+
+Then open the Studio:
+
+```bash
+memo ui
+```
+
+Run the same command again any time to update. To install somewhere else, set `OPENMEMO_HOME=/path/to/folder` before `sh`.
+
+## Features
+
+- **Local hybrid search (`hybrid-rrf`)**: fuses vault FTS5, session BM25, an Arabic/substring trigram index and knowledge-graph aliases. No API calls, no cost.
+- **Studio (`memo ui`)**: local web app at `http://127.0.0.1:8766` with the knowledge graph, live memory stream, duplicate cleaner and Markdown dossier reader.
+- **Automatic session memory**: hooks record every agent session as Markdown in your vault, with secrets redacted before anything is written.
+- **MCP server**: the same memory for any MCP client, locally over stdio or remotely with `docker compose up -d`.
 
 ---
 
 ## Choose Your Deployment Mode
 
-| Feature | Local (`memo init` / `uvx`) | 1-Click Hostinger VPS (`docker compose`) |
+| Feature | Local (`install.sh`) | 1-Click Hostinger VPS (`docker compose`) |
 | --- | --- | --- |
 | **Best For** | Individual machine & offline coding | Always-on remote MCP across desktop, laptop & web agents |
-| **Setup Command** | `./plugin/bin/memo init` | `docker compose up -d` on [Hostinger KVM VPS](https://www.hostinger.com/ua?REFERRALCODE=aboalrejalai) |
+| **Setup Command** | `curl -fsSL …/install.sh \| sh` | `docker compose up -d` on [Hostinger KVM VPS](https://www.hostinger.com/ua?REFERRALCODE=aboalrejalai) |
 | **Transport** | Local `stdio` (`scripts/mcp_server.py`) | HTTPS / Streaming MCP (`mcp-auth-proxy` on `:8080`) |
 | **Auth** | Local OS user permissions | Password-only auth (auto-generated on first boot or via `.env`) |
-| **Visual Studio** | `./plugin/bin/memo ui` (`127.0.0.1:8766`) | Local tunnel or Git-synced desktop clone |
+| **Visual Studio** | `memo ui` (`127.0.0.1:8766`) | Local tunnel or Git-synced desktop clone |
 
 ---
 
-## Quickstart (Local Zero-Friction Setup)
+## Manual install
+
+If you prefer not to pipe a script into `sh`:
 
 ```bash
 git clone https://github.com/aboalrejalai/openmemo.git ~/openmemo
 cd ~/openmemo
-
-# 1. Auto-detect & wire your installed AI agents + skills + diagnostics
 ./plugin/bin/memo init
-
-# 2. Launch the interactive Knowledge Graph & Hybrid Search Web Studio
 ./plugin/bin/memo ui
 ```
 
-Run verification suites anytime:
+Run the test suites:
 
 ```bash
 python3 scripts/test_mcp.py
@@ -99,6 +123,10 @@ Canonical skills live in [`.agents/skills/`](.agents/skills/) and are automatica
 | [docs/DEPLOY_HOSTINGER.md](docs/DEPLOY_HOSTINGER.md) | VPS + Docker remote MCP |
 | [docs/MEMO_GOALS.md](docs/MEMO_GOALS.md) | Product goals |
 | [deploy/memo-mcp/README.md](deploy/memo-mcp/README.md) | Container details |
+
+## Contributing and security
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). Report vulnerabilities privately as described in [SECURITY.md](SECURITY.md). Release notes are in [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 

@@ -6,11 +6,18 @@ tags:
   - type/core
   - status/active
 created: 2026-11-16
-updated: 2026-11-16
+updated: 2026-11-22
 ---
 # OpenMemo Quickstart
 
-## 1. Clone and verify
+## 1. Install
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/aboalrejalai/openmemo/main/install.sh | sh
+memo ui
+```
+
+Or clone and verify by hand:
 
 ```bash
 git clone https://github.com/aboalrejalai/openmemo.git

@@ -1,7 +1,9 @@
 """Prompts sent to the observer, built from plugin/modes/<mode>.json.
 
-Conversation shape (one observer conversation per session):
-  init or continuation prompt  →  one prompt per tool event  →  summary prompt
+Every observer call is a fresh, self-contained conversation (since 0.1.1):
+  batch_prompt    rules + request + short prior context + the new events only
+  summary_request rules + request + prior summary + this request's observations + reply
+A long session therefore costs the same per call at event 500 as at event 5.
 """
 
 from __future__ import annotations
@@ -10,7 +12,7 @@ import datetime
 import functools
 import json
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from . import privacy
 from .paths import vault_dir
@@ -100,8 +102,11 @@ def continuation_prompt(project: str, user_prompt: str, prompt_number: int, *, m
     return "\n\n".join(parts)
 
 
+REPLY_HINT = "Reply with one or more <observation> blocks, or <skip_summary reason=\"...\" />. No prose."
+
+
 def observation_prompt(tool_name: str, tool_input: str, tool_response: str, cwd: str,
-                       observed_at_ms: Optional[int] = None) -> str:
+                       observed_at_ms: Optional[int] = None, *, reply_hint: bool = True) -> str:
     at = datetime.datetime.fromtimestamp((observed_at_ms or 0) / 1000).isoformat(timespec="seconds") \
         if observed_at_ms else datetime.datetime.now().isoformat(timespec="seconds")
     return ("<observed_from_primary_session>\n"
@@ -110,8 +115,53 @@ def observation_prompt(tool_name: str, tool_input: str, tool_response: str, cwd:
             f"  <working_directory>{cwd}</working_directory>\n"
             f"  <parameters>{tool_input}</parameters>\n"
             f"  <outcome>{tool_response}</outcome>\n"
-            "</observed_from_primary_session>\n\n"
-            "Reply with one or more <observation> blocks, or <skip_summary reason=\"...\" />. No prose.")
+            "</observed_from_primary_session>" + (f"\n\n{REPLY_HINT}" if reply_hint else ""))
+
+
+def _prior_block(prior_summary: str, recorded_titles: List[str]) -> str:
+    """What earlier calls already wrote for this session: a few lines, never the raw history."""
+    parts = []
+    if prior_summary:
+        parts.append(f"<previous_summary>\n{prior_summary}\n</previous_summary>")
+    if recorded_titles:
+        lines = "\n".join(f"- {t}" for t in recorded_titles)
+        parts.append("<already_recorded>\nThese observations already exist for this session; "
+                     f"do not record them again:\n{lines}\n</already_recorded>")
+    return "\n\n".join(parts)
+
+
+def batch_prompt(project: str, user_prompt: str, prompt_number: int, events: List[Dict[str, Any]], *,
+                 prior_summary: str = "", recorded_titles: Optional[List[str]] = None, mode: str = "code",
+                 language: str = "en", requested_at: Optional[str] = None) -> str:
+    """One self-contained call: the rules, the request, a short prior context and the new events."""
+    p = load_mode(mode)["prompts"]
+    body = "\n\n".join(observation_prompt(e.get("tool_name") or "", e.get("tool_input") or "",
+                                           e.get("tool_response") or "", e.get("cwd") or "",
+                                           e.get("observed_at_ms"), reply_hint=False) for e in events)
+    parts = [p["identity"], f"Project: {project} · request #{prompt_number}", _guidance(p, language),
+             _request_block(user_prompt, requested_at)]
+    prior = _prior_block(prior_summary, recorded_titles or [])
+    if prior:
+        parts.append(prior)
+    parts += [p["start_header"], body, REPLY_HINT]
+    return "\n\n".join(parts)
+
+
+def summary_request(project: str, user_prompt: str, prompt_number: int, last_assistant_message: str, *,
+                    prior_summary: str = "", observations: Optional[List[str]] = None, mode: str = "code",
+                    language: str = "en", requested_at: Optional[str] = None) -> str:
+    """One self-contained summary call for request `prompt_number`."""
+    p = load_mode(mode)["prompts"]
+    parts = [p["identity"], f"Project: {project} · request #{prompt_number}",
+             LANGUAGES.get(language, LANGUAGES["en"]), privacy.REDACTION_HINT,
+             _request_block(user_prompt, requested_at)]
+    if prior_summary:
+        parts.append(f"<previous_summary>\n{prior_summary}\n</previous_summary>")
+    if observations:
+        lines = "\n".join(f"- {o}" for o in observations)
+        parts.append(f"<observations_for_this_request>\n{lines}\n</observations_for_this_request>")
+    parts.append(summary_prompt(last_assistant_message, mode=mode))
+    return "\n\n".join(parts)
 
 
 def summary_prompt(last_assistant_message: str, *, mode: str = "code") -> str:

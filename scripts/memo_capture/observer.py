@@ -14,7 +14,8 @@ Supports two providers (settings `observer_provider`):
     Optional resume: --conversation <id>
 
 - MEMO_OBSERVER=1 makes Memo's own hooks return at once.
-- Conversation id is stored so a restarted worker resumes instead of starting over.
+- The processor opens a fresh conversation for every call (Pool.fresh) and never
+  resumes one: a resumed conversation re-reads its whole history on each call.
 """
 
 from __future__ import annotations
@@ -308,6 +309,16 @@ class Pool:
                 obs = Observer(resume=resume)
                 self.observers[content_session_id] = obs
             return obs
+
+    def fresh(self, content_session_id: str) -> Observer:
+        """A new conversation for one call, replacing any live one for the session."""
+        obs = Observer(resume=None)
+        with self.lock:
+            old = self.observers.pop(content_session_id, None)
+            self.observers[content_session_id] = obs
+        if old:
+            old.close()
+        return obs
 
     def drop(self, content_session_id: str) -> None:
         with self.lock:

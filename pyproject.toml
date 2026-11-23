@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "openmemo"
-version = "0.1.0"
+version = "0.1.1"
 description = "Sovereign Memory Vault & Zero-Cost Hybrid Search Engine for AI Coding Agents (MCP + Capture Hooks + Interactive Knowledge Graph Studio)"
 readme = "README.md"
 license = { text = "MIT" }

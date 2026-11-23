@@ -1,6 +1,6 @@
 {
   "name": "memo",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Records every Codex session into the Memo vault as Markdown and brings it back in the next session",
   "author": {
     "name": "Mohammed Abo Alrejal"

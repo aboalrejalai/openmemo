@@ -6,6 +6,18 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-11-23
+
+### Fixed
+- The observer burned through model usage limits. It kept one resumed conversation per session, so every tool event re-read the whole session history: one small event cost 50–90k tokens, and the cost kept growing with the session. The 400k-character cap never applied, because its counter reset whenever the conversation was resumed.
+- Recorded `discovery_tokens` were cumulative per conversation, so token stats were heavily overstated.
+
+### Changed
+- Every observer call is now a fresh conversation (no `--resume` / `--conversation`). It carries only the rules, the user's request, the last summary, the titles already recorded and the new events, so a call costs about the same at event 500 as at event 5.
+- Events are sent once a session has been quiet for `observer_quiet_sec` (default 60), as soon as `observer_batch_size` events are queued (default 15, was 1), or when the session ends. A busy session makes about one call a minute instead of one per tool.
+- The extra "new request" priming call is gone: the request travels with the first batch.
+- A request that recorded nothing and got only a short reply no longer triggers a summary call.
+
 ## [0.1.0] - 2026-11-22
 
 First public release.
@@ -38,5 +50,6 @@ First public release.
 - Python 3.9 is the minimum supported version (macOS ships with it).
 - Personal names and private data were removed from docs, templates, tests and tool descriptions.
 
-[Unreleased]: https://github.com/aboalrejalai/openmemo/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/aboalrejalai/openmemo/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/aboalrejalai/openmemo/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/aboalrejalai/openmemo/releases/tag/v0.1.0

@@ -4,7 +4,9 @@
 - Drain thread: spool files → queue rows, on boot, on every nudge, and every
   30 seconds as a sweep.
 - Process loop: hands each session's queued events to the observer
-  (processor.process_session), at most `observer_max_concurrent` at a time.
+  (processor.process_session), at most `observer_max_concurrent` at a time,
+  once the session has been quiet for `observer_quiet_sec` or has queued
+  `observer_batch_size` events. A live session costs one call a minute at most.
 
 Hooks never depend on it being up: they spool to disk and start it.
 """
@@ -30,6 +32,12 @@ SWEEP_SECONDS = 30
 STUCK_EXIT_SEC = 300
 SYNC_SECONDS_PER_MINUTE = 60
 SYNC_POLL_SECONDS = 60      # writes failing this long: exit, and the next hook starts a fresh worker
+
+
+def _debounce():
+    """(quiet period in ms, batch size): when a session's events go to the observer."""
+    return (int(settings.get("observer_quiet_sec") or 0) * 1000,
+            max(1, int(settings.get("observer_batch_size") or 1)))
 
 
 def pid_file():
@@ -93,12 +101,22 @@ class Worker:
                 self.note(False, f"OperationalError: {exc}")
             except Exception:
                 log_line("worker", "drain failed:\n" + traceback.format_exc())
-            self.wake.wait(SWEEP_SECONDS)
+            self.wake.wait(self.next_wait())
             self.wake.clear()
             idle = int(settings.get("worker_idle_exit_sec") or 0)
             if idle and time.time() - self.last_activity > idle and not self.busy:
                 log_line("worker", "idle exit")
                 self.shutdown()
+
+    def next_wait(self) -> float:
+        """Sleep until the sweep, or until the next waiting session goes quiet."""
+        try:
+            due = state.next_ready_in_ms(self.conn, _debounce()[0])
+        except sqlite3.Error:
+            return SWEEP_SECONDS
+        if due is None:
+            return SWEEP_SECONDS
+        return min(SWEEP_SECONDS, max(1.0, due / 1000 + 0.5))
 
     def wrap_up_idle(self) -> None:
         """Hosts without a reliable SessionEnd hook: end a session after it goes quiet."""
@@ -134,7 +152,8 @@ class Worker:
             from . import processor
         except ImportError:
             return  # the observer is not installed yet
-        for sid in state.sessions_with_pending(self.conn):
+        quiet_ms, batch = _debounce()
+        for sid in state.sessions_with_pending(self.conn, quiet_ms, batch):
             with self.busy_lock:
                 if sid in self.busy:
                     continue

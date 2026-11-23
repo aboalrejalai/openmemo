@@ -44,9 +44,10 @@ DEFAULTS: Dict[str, Any] = {
     "observer_model": "claude-opus-5-5",
     "observer_effort": "medium",
     "observer_max_concurrent": 2,
-    "observer_max_conversation_chars": 400_000,
+    "observer_max_conversation_chars": 400_000,   # unused since 0.1.1 (every call is a fresh conversation)
     "observer_language": "en",            # language of narratives: en | ar
-    "observer_batch_size": 1,             # tool events per observer message (claude-mem: 1)
+    "observer_batch_size": 15,            # tool events per observer call; a full batch is sent at once
+    "observer_quiet_sec": 60,             # otherwise a session's events wait until it is quiet this long
     "observer_timeout_sec": 600,
     "observer_idle_close_sec": 900,
     "claude_cli": "",                      # empty: find `claude` on PATH

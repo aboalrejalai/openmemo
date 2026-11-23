@@ -429,11 +429,42 @@ def enqueue(conn: sqlite3.Connection, content_session_id: str, message_type: str
     return int(cur.lastrowid)
 
 
-def sessions_with_pending(conn: sqlite3.Connection) -> List[str]:
-    rows = conn.execute("""SELECT DISTINCT content_session_id FROM pending_messages
-                           WHERE status = 'pending' AND not_before <= ? ORDER BY id""",
-                        (now_ms(),)).fetchall()
-    return [r[0] for r in rows]
+_READY_SQL = """SELECT content_session_id,
+                        MAX(created_at) AS newest,
+                        SUM(message_type = 'observation') AS events,
+                        SUM(message_type = 'session_end') AS ends
+                 FROM pending_messages WHERE status = 'pending' AND not_before <= ?
+                 GROUP BY content_session_id ORDER BY MIN(id)"""
+
+
+def _is_ready(row, now: int, quiet_ms: int, batch: int) -> bool:
+    """Send a session's events once it went quiet, filled a batch, or ended."""
+    return (now - int(row["newest"]) >= quiet_ms or int(row["events"] or 0) >= batch
+            or int(row["ends"] or 0) > 0)
+
+
+def sessions_with_pending(conn: sqlite3.Connection, quiet_ms: int = 0, batch: int = 1) -> List[str]:
+    """Sessions whose queued events are ready for the observer.
+
+    With quiet_ms > 0 a session waits until no event arrived for quiet_ms, unless
+    `batch` observation events are already queued or the session has ended.
+    """
+    now = now_ms()
+    rows = conn.execute(_READY_SQL, (now,)).fetchall()
+    return [r["content_session_id"] for r in rows if _is_ready(r, now, quiet_ms, max(1, batch))]
+
+
+def session_ready(conn: sqlite3.Connection, content_session_id: str, quiet_ms: int, batch: int) -> bool:
+    return content_session_id in sessions_with_pending(conn, quiet_ms, batch)
+
+
+def next_ready_in_ms(conn: sqlite3.Connection, quiet_ms: int) -> Optional[int]:
+    """How long until the next waiting session goes quiet (None: nothing waits)."""
+    now = now_ms()
+    rows = conn.execute(_READY_SQL, (now,)).fetchall()
+    if not rows:
+        return None
+    return max(0, min(int(r["newest"]) + quiet_ms - now for r in rows))
 
 
 def claim_batch(conn: sqlite3.Connection, content_session_id: str, limit: int = 50) -> List[sqlite3.Row]:

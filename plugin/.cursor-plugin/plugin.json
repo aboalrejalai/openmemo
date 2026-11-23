@@ -1,7 +1,7 @@
 {
   "name": "memo",
   "displayName": "Memo",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Automatic session memory for Cursor, stored as Markdown in the Memo vault — hooks, MCP, and search, the same capture stack as Claude Code.",
   "author": {
     "name": "Mohammed Abo Alrejal"

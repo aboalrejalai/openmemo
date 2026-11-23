@@ -1,6 +1,6 @@
 {
   "name": "@local/memo-sessions",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "Records every ZadLoop session into the Memo vault, the same way the Claude Code plugin does.",
   "type": "module",
